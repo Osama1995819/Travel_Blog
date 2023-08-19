@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Location Map</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location Map</h1>
+    <input type="text" id="locationInput" placeholder="Enter location name">
+    <button onclick="findLocation()">Find Location</button>
+    <div id="map"></div>
+
+    <script>
+        // Replace with your own Google Maps API key
+        const apiKey = 'AIzaSyDP4k5JcV9DNVd1Q_LfCDJ4FeP4frsNXSg';
+
+        function initMap(latitude, longitude) {
+            const location = { lat: latitude, lng: longitude };
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: location,
+                zoom: 14
+            });
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+
+        function findLocation() {
+            const locationName = document.getElementById('locationInput').value;
+            //const locationName = 'Fremont'
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: locationName }, (results, status) => {
+                if (status === 'OK') {
+                    const latitude = results[0].geometry.location.lat();
+                    const longitude = results[0].geometry.location.lng();
+                    initMap(latitude, longitude);
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDP4k5JcV9DNVd1Q_LfCDJ4FeP4frsNXSg&callback=initMap" async defer></script>
+</body>
+</html>
