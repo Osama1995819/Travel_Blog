@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for post in posts.items %}
+        {% set total_images = no_of_images[loop.index0] %}
+        {% set total_videos = no_of_videos[loop.index0] %}
+        <article class="media content-section">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image) }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+              <small class="text-muted">{{ post.date_posted }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
+            <p class="article-content">{{ post.content }}</p>
+            <style>
+              .image-container {
+                  display: flex;
+                  flex-wrap: wrap;
+              }
+              .image {
+                  margin: 2px;
+              }
+              .image-1 {
+                width: 582px;
+                max-height: 250px;
+              }
+
+              .image-2 {
+                width: 290px;
+                max-height: 250px;
+              }
+            </style>
+            <div class = "image-container">
+            {% if post.image  %}
+              {% for imagee in post.image.split(',') %}
+                {% if imagee != '' %}
+                 <!-- <p1> picture number {{ loop.index}}  </p1>   -->  
+                  {% if loop.index == total_images and total_images % 2 == 1  %}
+                    <img class="image image-1" src="{{ url_for('static', filename='post_pics/' + imagee) }}" alt = "Image"> 
+                  {% else %}
+                    <img class="image image-2" src="{{ url_for('static', filename='post_pics/' + imagee) }}" alt = "Image"> 
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            </div>
+            {% if post.video %}
+              {% for videoo in post.video.split(',') %}
+                {% if videoo != '' %}
+                  {% if loop.index == total_videos and total_videos % 2 == 1  %}
+                    <video class="image image-1" controls>
+                      <source src ="{{ url_for('static', filename='post_videos/' + videoo) }}"  >             
+                    </video>
+                  {% else %}
+                    <video class="image image-2" controls>
+                      <source src ="{{ url_for('static', filename='post_videos/' + videoo) }}"  >             
+                    </video>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </article>
+    {% endfor %}
+    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+        {% if posts.page == page_num %}
+          <a class="btn btn-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+        {% else %}
+          <a class="btn btn-outline-info mb-4" href="{{ url_for('home', page=page_num) }}">{{ page_num }}</a>
+        {% endif %}
+      {% else %}
+        ...
+      {% endif %}
+    {% endfor %}
+{% endblock content %}

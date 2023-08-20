@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <article class="media content-section">
+    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image) }}">
+    <div class="media-body">
+      <div class="article-metadata">
+        <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+        <small class="text-muted">{{ post.date_posted }}</small>
+        {% if post.author == current_user %}
+          <div>
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('update_post', post_id=post.id) }}">Update</a>
+            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+          </div>
+        {% endif %}
+      </div>
+      <h2 class="article-title">{{ post.title }}</h2>
+      <p class="article-content">{{ post.content }}</p>
+      <style>
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .image {
+            margin: 2px;
+        }
+        .image-1 {
+          width: 582px;
+          max-height: 250px;
+        }
+
+        .image-2 {
+          width: 290px;
+          max-height: 250px;
+        }
+      </style>
+      <div class = "image-container">
+      {% if post.image  %}
+        {% for imagee in post.image.split(',') %}
+          {% if imagee != '' %}
+           <!-- <p1> picture number {{ loop.index}}  </p1>   -->  
+            {% if loop.index == no_of_images and no_of_images % 2 == 1  %}
+              <img class="image image-1" src="{{ url_for('static', filename='post_pics/' + imagee) }}" alt = "Image"> 
+            {% else %}
+              <img class="image image-2" src="{{ url_for('static', filename='post_pics/' + imagee) }}" alt = "Image"> 
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      </div>
+      {% if post.video %}
+        {% for videoo in post.video.split(',') %}
+          {% if videoo != '' %}
+            {% if loop.index == no_of_videos and no_of_videos % 2 == 1  %}
+              <video class="image image-1" controls>
+                <source src ="{{ url_for('static', filename='post_videos/' + videoo) }}"  >             
+              </video>
+            {% else %}
+              <video class="image image-2" controls>
+                <source src ="{{ url_for('static', filename='post_videos/' + videoo) }}"  >             
+              </video>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+    </div>
+  </article>
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST">
+            <input class="btn btn-danger" type="submit" value="Delete">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
